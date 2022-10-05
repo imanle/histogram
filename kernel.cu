@@ -18,7 +18,7 @@ __global__ void histogram_private_kernel(unsigned char* image, unsigned int* bin
      
     if (hist_s[threadIdx.x] > 0 && i < NUM_BINS) {
         unsigned char b = image[i];
-        atomicAdd(&bins[b],hist_s[threadIdx.x]);
+        atomicAdd(&bins[b],hist_s[image[threadIdx.x]]);
     }
 }
 
