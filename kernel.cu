@@ -4,20 +4,21 @@
 
 __global__ void histogram_private_kernel(unsigned char* image, unsigned int* bins, unsigned int width, unsigned int height) {
      __shared__ int hist_s[NUM_BINS];
-     unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-     if(threadIdx.x < NUM_BINS)
+     unsigned int i = blockIdx.x*blockDim.x+threadIdx.x;
+     if(threadIdx.x < NUM_BINS){
           hist_s[threadIdx.x]=0;
+     }
      
     __syncthreads();
      
-    if(i < width * height ) {
+    if(i < width*height ) {
         unsigned char b = image[i];
         atomicAdd(&hist_s[b], 1);
     }
     
      __syncthreads();
      
-    if ( threadIdx.x < NUM_BINS && hist_s[threadIdx.x]>0) {
+    if ( threadIdx.x < NUM_BINS ) {
         atomicAdd(&bins[threadIdx.x],hist_s[threadIdx.x]);
     }
    
