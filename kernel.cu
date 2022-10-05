@@ -8,7 +8,7 @@ __global__ void histogram_private_kernel(unsigned char* image, unsigned int* bin
      if(i<NUM_BINS){
           hist_s[i]=0;
      }
-    __synchthreads();
+    __syncthreads();
      
     if(i < width * height) {
         unsigned char b = image[i];
