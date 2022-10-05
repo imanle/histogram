@@ -1,7 +1,7 @@
 
 #include "common.h"
 #include "timer.h"
-#define COARSE_FACTOR 32
+#define COARSE_FACTOR 4
 __global__ void histogram_private_kernel(unsigned char* image, unsigned int* bins, unsigned int width, unsigned int height) {
      __shared__ int hist_s[NUM_BINS];
      unsigned int i = blockIdx.x*blockDim.x+threadIdx.x;
