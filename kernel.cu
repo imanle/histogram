@@ -5,16 +5,18 @@
 __global__ void histogram_private_kernel(unsigned char* image, unsigned int* bins, unsigned int width, unsigned int height) {
      __shared__ int hist_s [NUM_BINS];
      unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-     cudaMemset(hist_s, 0, NUM_BINS * sizeof(unsigned int));
-     __syncthreads();
-    
+     if(i<NUM_BINS){
+          hist_s[i]=0;
+     }
+    __synchthreads();
+     
     if(i < width * height) {
         unsigned char b = image[i];
         atomicAdd(&hist_s[b], 1);
     }
      __syncthreads();
      
-    if (hist_s[threadIdx.x] >0) {
+    if (hist_s[threadIdx.x] > 0 && i < NUM_BINS) {
         unsigned char b = image[i];
         atomicAdd(&bins[b],hist_s[b]);
     }
