@@ -33,7 +33,7 @@ void histogram_gpu_private(unsigned char* image_d, unsigned int* bins_d, unsigne
 
 __global__ void histogram_private_coarse_kernel(unsigned char* image, unsigned int* bins, unsigned int width, unsigned int height) {
 
-    __shared__ int hist_s[blockDim.x];
+    __shared__ int hist_s[NUM_BINS];
      unsigned int i = blockIdx.x*blockDim.x+threadIdx.x;
      if(threadIdx.x < NUM_BINS){
           hist_s[threadIdx.x]=0;
@@ -42,12 +42,12 @@ __global__ void histogram_private_coarse_kernel(unsigned char* image, unsigned i
     __syncthreads();
      for(unsigned int c=0 ; c<COARSE_FACTOR;c++)
      {
-          if(i+blockDim.c<width*height)
-               atomicAdd(&(hist_s[image[i+blockDim.c]],1)
+          if(i+blockDim.x*c<width*height)
+               atomicAdd(&(hist_s[image[i+blockDim.x*c]],1)
      }
                          
      __syncthreads();
-     if(threadIdx.x< NUM_BINS && bins_s[threadIdx.x]>0)
+     if(threadIdx.x< NUM_BINS && hist_s[threadIdx.x]>0)
           atomicAdd(&bins[threadIdx.x],hist_s[threadIdx.x]);
 
 
