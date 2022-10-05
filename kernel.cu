@@ -40,7 +40,7 @@ __global__ void histogram_private_coarse_kernel(unsigned char* image, unsigned i
      }
      
     __syncthreads();
-     for(unsigned int c=0 ; c<COARSE_FACTOR;c++)
+     for(unsigned int c=0 ; c<COARSE_FACTOR;++c)
      {
           if(i+blockDim.x*c<width*height)
                atomicAdd(&hist_s[image[i+blockDim.x*c]],1);
