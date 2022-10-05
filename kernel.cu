@@ -31,9 +31,9 @@ void histogram_gpu_private(unsigned char* image_d, unsigned int* bins_d, unsigne
      histogram_private_kernel <<< numBlocks, numThreadsPerBlock >>>(image_d,bins_d, width,height);
 }
 
-global_ void histogram_private_coarse_kernel(unsigned char* image, unsigned int* bins, unsigned int width, unsigned int height) {
+__global__ void histogram_private_coarse_kernel(unsigned char* image, unsigned int* bins, unsigned int width, unsigned int height) {
 
-    _shared_ unsigned int bins_s [NUM_BINS];
+   shared_ unsigned int bins_s [NUM_BINS];
     unsigned int index = blockIdx.x * blockDim.x * COARSENING_FACTOR + threadIdx.x;
 
     if ( threadIdx.x < NUM_BINS ) 
@@ -49,6 +49,7 @@ global_ void histogram_private_coarse_kernel(unsigned char* image, unsigned int*
 
     if (threadIdx.x < NUM_BINS && bins_s[threadIdx.x] > 0) 
         atomicAdd(&bins[threadIdx.x], bins_s[threadIdx.x]);
+
 }
 
 void histogram_gpu_private_coarse(unsigned char* image_d, unsigned int* bins_d, unsigned int width, unsigned int height) {
@@ -57,4 +58,10 @@ void histogram_gpu_private_coarse(unsigned char* image_d, unsigned int* bins_d, 
     
     unsigned int numBlocks = (width * height + numThreadsPerBlock   - 1) / (COARSENING_FACTOR * numThreadsPerBlock);
     histogram_private_coarse_kernel <<< numBlocks, numThreadsPerBlock >>> (image_d, bins_d, width, height);
+
+
+
+
+
 }
+
